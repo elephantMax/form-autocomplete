@@ -1,5 +1,6 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const Dotenv = require('dotenv-webpack')
 
 const config = {
   entry: './app/index.js',
@@ -7,9 +8,15 @@ const config = {
     path: path.resolve(__dirname, 'dist'),
     filename: 'index_bundle.js',
   },
+  devServer: {
+    watchFiles: ['./app/index.html'],
+  },
   module: {
     rules: [
-      { test: /\.css$/, use: ['style-loader', 'css-loader'] },
+      {
+        test: /\.(s*)css$/,
+        use: ['style-loader', 'css-loader', 'sass-loader'],
+      },
       { test: /\.(js)$/, use: 'babel-loader' },
     ],
   },
@@ -19,8 +26,9 @@ const config = {
       template: path.resolve(__dirname, './app/index.html'),
       filename: 'index.html',
     }),
+    new Dotenv(),
   ],
-  mode: 'none',
+  mode: 'development',
 }
 
 module.exports = (env, argv) => {

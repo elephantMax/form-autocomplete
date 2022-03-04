@@ -1,0 +1,21 @@
+* {
+  box-sizing: border-box;
+}
+
+.container {
+  max-width: 800px;
+  width: 100%;
+  margin: 100px auto;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  &__group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+}
