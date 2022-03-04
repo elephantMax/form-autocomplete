@@ -18,9 +18,10 @@ const styleTemplate = `
         margin: 0;
         padding: 0;
         list-style-type: none;
-        background-color: #ccc;
         max-height: 150px;
         overflow-y: auto;
+        background-color: #fff;
+        box-shadow: 0px 0px 3px #00000085;
       }
 
       li {
@@ -29,7 +30,7 @@ const styleTemplate = `
       }
 
       li:hover {
-        background-color: #fff;
+        background-color: #ececec;
       }
 
   `
@@ -38,6 +39,7 @@ export default class SearchableDropdown extends HTMLElement {
   value = null
   items = []
   listEl = null
+  inputEl = null
   isItemsVisible = false
   inputValue = ''
 
@@ -107,6 +109,9 @@ export default class SearchableDropdown extends HTMLElement {
       this.updateItemsVisablility()
     })
 
+    input.addEventListener('focus', this.showItems.bind(this))
+    input.addEventListener('blur', this.hideItems.bind(this))
+
     return input
   }
 
@@ -114,27 +119,27 @@ export default class SearchableDropdown extends HTMLElement {
     const list = document.createElement('ul')
     this.items.forEach((item) => {
       const li = document.createElement('li')
-      li.textContent = item.data.name.full
+      li.textContent = item.data.name.short_with_opf
       li.dataset.value = item.data.hid
       list.appendChild(li)
     })
-    list.addEventListener('click', (e) => {
+    list.addEventListener('mousedown', (e) => {
       const { target } = e
       if (target.tagName !== 'LI') {
         return
       }
-
       const id = target.dataset.value
       this.value = this.items.find((item) => item.data.hid === id)
-      this.hideItems()
       this.dispatchEvent(new Event('select'))
+      this.setAttribute('value', this.value.data.name.short_with_opf)
+      this.inputEl.value = this.value.data.name.short_with_opf
     })
 
     return list
   }
 
   createElements() {
-    const input = this.craeteInputElement()
+    this.inputEl = this.craeteInputElement()
 
     const style = document.createElement('style')
     style.innerHTML = styleTemplate
@@ -143,7 +148,7 @@ export default class SearchableDropdown extends HTMLElement {
 
     return {
       style,
-      input,
+      input: this.inputEl,
       list,
     }
   }
