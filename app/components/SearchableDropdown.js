@@ -27,6 +27,11 @@ const styleTemplate = `
       li {
         padding: 5px;
         cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       li:hover {
@@ -119,18 +124,26 @@ export default class SearchableDropdown extends HTMLElement {
     const list = document.createElement('ul')
     this.items.forEach((item) => {
       const li = document.createElement('li')
-      li.textContent = item.data.name.short_with_opf
+      const nameSpan = document.createElement('span')
+      const addressSpan = document.createElement('span')
+      nameSpan.textContent = item.data.name.short_with_opf
+      addressSpan.textContent = `${item.data.inn} ${item.data.address.value}`
+      li.appendChild(nameSpan)
+      li.appendChild(addressSpan)
       li.dataset.value = item.data.hid
       list.appendChild(li)
     })
     list.addEventListener('mousedown', (e) => {
       const { target } = e
-      if (target.tagName !== 'LI') {
-        return
-      }
-      const id = target.dataset.value
+      const li = target.closest('li')
+
+      if (!li) return
+
+      const id = li.dataset.value
+
       this.value = this.items.find((item) => item.data.hid === id)
       this.dispatchEvent(new Event('select'))
+
       this.setAttribute('value', this.value.data.name.short_with_opf)
       this.inputEl.value = this.value.data.name.short_with_opf
     })
