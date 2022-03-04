@@ -43,7 +43,7 @@ dropdown.addEventListener('select', (e) => {
   if (!target.value) return
 
   const item = target.value.data
-  const { type, inn, kpp, name, opf, address } = item
+  const { type, inn, kpp, name, address } = item
   elType.innerHTML = `Организация (${type})`
   elNameShort.value = name.short_with_opf
   elNameFull.value = name.full_with_opf

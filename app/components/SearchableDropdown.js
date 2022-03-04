@@ -45,7 +45,6 @@ export default class SearchableDropdown extends HTMLElement {
   items = []
   listEl = null
   inputEl = null
-  isItemsVisible = false
   inputValue = ''
 
   constructor() {
@@ -53,12 +52,10 @@ export default class SearchableDropdown extends HTMLElement {
   }
 
   showItems() {
-    this.isItemsVisible = true
     this.listEl.style.display = 'block'
   }
 
   hideItems() {
-    this.isItemsVisible = false
     this.listEl.style.display = 'none'
   }
 
@@ -84,6 +81,7 @@ export default class SearchableDropdown extends HTMLElement {
     this.attachShadow({ mode: 'open' })
     const { input, style, list } = this.createElements()
 
+    this.inputEl = input
     this.listEl = list
 
     this.shadowRoot.appendChild(input)
@@ -95,7 +93,7 @@ export default class SearchableDropdown extends HTMLElement {
     return ['value']
   }
 
-  attributeChangedCallback(name, oldValue, newValue) {
+  attributeChangedCallback(name, _, newValue) {
     if (name === 'value') {
       this.setInputValue(newValue)
     }
@@ -142,17 +140,19 @@ export default class SearchableDropdown extends HTMLElement {
       const id = li.dataset.value
 
       this.value = this.items.find((item) => item.data.hid === id)
+      if (!this.value) return
+      const { name } = this.value.data
       this.dispatchEvent(new Event('select'))
 
-      this.setAttribute('value', this.value.data.name.short_with_opf)
-      this.inputEl.value = this.value.data.name.short_with_opf
+      this.setAttribute('value', name.short_with_opf)
+      this.inputEl.value = name.short_with_opf
     })
 
     return list
   }
 
   createElements() {
-    this.inputEl = this.craeteInputElement()
+    const input = this.craeteInputElement()
 
     const style = document.createElement('style')
     style.innerHTML = styleTemplate
@@ -161,7 +161,7 @@ export default class SearchableDropdown extends HTMLElement {
 
     return {
       style,
-      input: this.inputEl,
+      input,
       list,
     }
   }
